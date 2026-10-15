@@ -1,0 +1,480 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Apollo Construction (mock-up)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;800&family=Public+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a slate roofline header, a two-trade band, a four-step process strip, then the one branching form. */
+:root {
+  --paper: #f2f4f2;        /* cool off-white, like primed siding */
+  --panel: #ffffff;
+  --ink: #1d262c;          /* slate */
+  --ink-soft: #4a5760;
+  --rule: #cfd6d6;
+  --verdigris: #2f7d6d;    /* weathered copper flashing */
+  --verdigris-ink: #ffffff;
+  --cedar: #a8682f;        /* small warm detail only */
+  --banner: #ffe58a;
+  --banner-ink: #3a3000;
+  --error: #b3261e;
+  --display: "Big Shoulders Display", "Arial Narrow", "Helvetica Neue", Arial, sans-serif;
+  --body: "Public Sans", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --paper: #12181c; --panel: #1a2228; --ink: #e6ecec; --ink-soft: #a6b3b8; --rule: #2e3a41;
+    --verdigris: #5fb8a3; --verdigris-ink: #0c1a16; --cedar: #d39a63; --banner: #4a4012; --banner-ink: #ffeeb0;
+    --error: #ff8a80; color-scheme: dark;
+  }
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; background: var(--paper); color: var(--ink);
+  font: 400 1rem/1.6 var(--body);
+  padding-top: env(safe-area-inset-top, 0px);
+}
+.wrap {
+  max-width: 1080px; margin: 0 auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+a { color: var(--verdigris); }
+:focus-visible { outline: 3px solid var(--verdigris); outline-offset: 2px; }
+
+.mock {
+  background: var(--banner); color: var(--banner-ink);
+  font: 500 0.85rem/1.4 var(--body);
+}
+.mock .wrap { padding-block: 8px; }
+.mock strong { font-weight: 600; }
+
+header.site { border-bottom: 1px solid var(--rule); }
+header.site .wrap { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding-block: 14px; flex-wrap: wrap; }
+.brand { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--ink); }
+.brand svg { width: 38px; height: 26px; flex: none; }
+.brand span { font: 800 1.45rem/1 var(--display); letter-spacing: 0.04em; text-transform: uppercase; }
+nav.top { display: flex; gap: 18px; flex-wrap: wrap; }
+nav.top a { color: var(--ink-soft); text-decoration: none; font-weight: 500; font-size: 0.95rem; }
+nav.top a:hover { color: var(--ink); text-decoration: underline; }
+
+.hero .wrap { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 40px; align-items: end; padding-block: 56px 40px; }
+.eyebrow { font: 500 0.78rem/1.2 var(--mono); letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-soft); margin: 0 0 14px; }
+h1 { font: 800 clamp(2.6rem, 6.5vw, 4.6rem)/0.95 var(--display); text-transform: uppercase; letter-spacing: 0.01em; margin: 0 0 18px; text-wrap: balance; }
+h1 em { font-style: normal; color: var(--verdigris); }
+.lede { font-size: 1.15rem; color: var(--ink-soft); max-width: 34em; margin: 0 0 26px; }
+.ctas { display: flex; gap: 12px; flex-wrap: wrap; }
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  font: 600 1rem/1 var(--body); padding: 14px 20px; border-radius: 4px; text-decoration: none; cursor: pointer;
+  border: 2px solid var(--verdigris); background: var(--verdigris); color: var(--verdigris-ink);
+}
+.btn.ghost { background: transparent; color: var(--ink); border-color: var(--ink); }
+.btn:hover { filter: brightness(1.06); }
+
+.roofline { width: 100%; max-width: 100%; height: auto; display: block; }
+.spec { font: 400 0.8rem/1.5 var(--mono); color: var(--ink-soft); margin-top: 10px; }
+
+section { padding-block: 8px; }
+.trades { border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); background: var(--panel); }
+.trades .wrap { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.trade { padding-block: 32px; display: grid; gap: 10px; align-content: start; }
+.trade + .trade { border-left: 1px solid var(--rule); padding-left: 32px; }
+.trade:first-child { padding-right: 32px; }
+h2 { font: 800 clamp(1.8rem, 3.6vw, 2.4rem)/1 var(--display); text-transform: uppercase; margin: 0; text-wrap: balance; }
+.trade p { margin: 0; color: var(--ink-soft); max-width: 36em; }
+.trade ul { margin: 6px 0 0; padding: 0; list-style: none; display: grid; gap: 6px; }
+.trade li { display: flex; gap: 10px; align-items: baseline; }
+.trade li::before { content: ""; width: 8px; height: 8px; background: var(--cedar); flex: none; transform: translateY(-1px) rotate(45deg); }
+
+.process .wrap { padding-block: 44px; }
+.process h2 { margin-bottom: 22px; }
+.steps { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0; counter-reset: step; margin: 0; padding: 0; list-style: none; border-top: 3px solid var(--ink); }
+.steps li { padding: 16px 18px 6px 0; display: grid; gap: 6px; align-content: start; }
+.steps li + li { padding-left: 18px; border-left: 1px solid var(--rule); }
+.steps b { font: 800 1.35rem/1 var(--display); text-transform: uppercase; }
+.steps b::before { counter-increment: step; content: counter(step) " "; color: var(--verdigris); }
+.steps span { color: var(--ink-soft); font-size: 0.95rem; }
+
+.area { font: 400 0.85rem/1.6 var(--mono); color: var(--ink-soft); }
+
+/* ---- the form ---- */
+.contact { background: var(--panel); border-top: 1px solid var(--rule); }
+.contact .wrap { display: grid; grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.4fr); gap: 48px; padding-block: 48px 64px; }
+.contact aside p { color: var(--ink-soft); margin: 12px 0 0; max-width: 30em; }
+form { display: grid; gap: 22px; min-width: 0; }
+.choose { border: 0; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.choose legend { font-weight: 600; margin-bottom: 10px; padding: 0; }
+.choice { position: relative; }
+.choice input { position: absolute; opacity: 0; inset: 0; margin: 0; cursor: pointer; }
+.choice label {
+  display: grid; gap: 4px; padding: 16px; border: 2px solid var(--rule); border-radius: 6px; cursor: pointer; height: 100%;
+}
+.choice label b { font: 800 1.25rem/1.05 var(--display); text-transform: uppercase; }
+.choice label small { color: var(--ink-soft); font-size: 0.88rem; line-height: 1.4; }
+.choice input:checked + label { border-color: var(--verdigris); box-shadow: inset 0 0 0 1px var(--verdigris); }
+.choice input:focus-visible + label { outline: 3px solid var(--verdigris); outline-offset: 2px; }
+
+fieldset.branch { border: 0; margin: 0; padding: 0; display: grid; gap: 16px; min-width: 0; }
+.grid2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.field { display: grid; gap: 6px; min-width: 0; }
+.field label, .field .label { font-weight: 600; font-size: 0.92rem; }
+.field .hint { color: var(--ink-soft); font-size: 0.83rem; font-weight: 400; }
+input[type=text], input[type=email], input[type=tel], input[type=month], select, textarea {
+  width: 100%; font: 400 1rem/1.4 var(--body); color: var(--ink); background: var(--paper);
+  border: 1px solid var(--rule); border-radius: 4px; padding: 11px 12px;
+}
+textarea { min-height: 120px; resize: vertical; }
+input:focus, select:focus, textarea:focus { border-color: var(--verdigris); outline: 2px solid var(--verdigris); outline-offset: 0; }
+.pills { display: flex; gap: 10px; flex-wrap: wrap; }
+.pill { position: relative; }
+.pill input { position: absolute; opacity: 0; inset: 0; margin: 0; cursor: pointer; }
+.pill label { display: inline-block; padding: 9px 16px; border: 1px solid var(--rule); border-radius: 999px; cursor: pointer; font-weight: 500; }
+.pill input:checked + label { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+.pill input:focus-visible + label { outline: 3px solid var(--verdigris); outline-offset: 2px; }
+.check { display: flex; gap: 10px; align-items: flex-start; font-size: 0.92rem; color: var(--ink-soft); }
+.check input { margin-top: 4px; width: 18px; height: 18px; accent-color: var(--verdigris); flex: none; }
+.hp { position: absolute; left: -10000px; width: 1px; height: 1px; overflow: hidden; }
+.formfoot { display: flex; gap: 16px; align-items: center; flex-wrap: wrap; }
+.formfoot p { margin: 0; font-size: 0.83rem; color: var(--ink-soft); flex: 1 1 220px; }
+.err { color: var(--error); font-size: 0.9rem; margin: 0; }
+
+.thanks { border: 2px solid var(--verdigris); border-radius: 6px; padding: 20px; display: grid; gap: 8px; }
+.thanks h3 { font: 800 1.5rem/1.05 var(--display); text-transform: uppercase; margin: 0; }
+.thanks p { margin: 0; color: var(--ink-soft); }
+
+footer { border-top: 1px solid var(--rule); }
+footer .wrap { padding-block: 24px 36px; display: flex; gap: 16px; justify-content: space-between; flex-wrap: wrap; font-size: 0.85rem; color: var(--ink-soft); }
+
+@media (max-width: 820px) {
+  .hero .wrap, .contact .wrap { grid-template-columns: minmax(0, 1fr); gap: 28px; }
+  .trades .wrap { grid-template-columns: minmax(0, 1fr); }
+  .trade + .trade { border-left: 0; border-top: 1px solid var(--rule); padding-left: 0; }
+  .trade:first-child { padding-right: 0; }
+  .steps { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .steps li:nth-child(3) { padding-left: 0; border-left: 0; }
+}
+@media (max-width: 520px) {
+  .choose, .grid2 { grid-template-columns: minmax(0, 1fr); }
+  .steps { grid-template-columns: minmax(0, 1fr); }
+  .steps li + li { padding-left: 0; border-left: 0; border-top: 1px solid var(--rule); }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .btn, .choice label, .pill label { transition: background-color .15s, border-color .15s, filter .15s; }
+}
+</style>
+</head>
+<body>
+
+<div class="mock" role="note">
+  <div class="wrap"><strong>Mock-up for testing.</strong> This is not Apollo Construction's live website. Forms send to a Salesforce test org; please use made-up details.</div>
+</div>
+
+<header class="site">
+  <div class="wrap">
+    <a class="brand" href="#top" aria-label="Apollo Construction home">
+      <svg viewBox="0 0 38 26" aria-hidden="true"><path d="M1 24 L19 3 L37 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linejoin="miter"/><path d="M9 24 V15 M29 24 V15" stroke="currentColor" stroke-width="2.4"/></svg>
+      <span>Apollo Construction</span>
+    </a>
+    <nav class="top" aria-label="Main">
+      <a href="#roofing">Roofing</a>
+      <a href="#carpentry">Carpentry</a>
+      <a href="#how">How we work</a>
+      <a href="?type=repair#contact">Existing clients</a>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+  <section class="hero">
+    <div class="wrap">
+      <div>
+        <p class="eyebrow">Roofing &amp; carpentry · Franklin County, MA</p>
+        <h1>Roofs that shed <em>New England</em> weather. Porches that last.</h1>
+        <p class="lede">A small crew from Turners Falls. We measure every job in person, write you a clear estimate, and stand behind our work for a year after we finish.</p>
+        <div class="ctas">
+          <a class="btn" href="?type=lead#contact">Get an estimate</a>
+          <a class="btn ghost" href="?type=repair#contact">Report an issue</a>
+        </div>
+      </div>
+      <div>
+        <svg class="roofline" viewBox="0 0 420 220" role="img" aria-label="Line drawing of a gable roof with a porch">
+          <g fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round">
+            <path d="M20 120 L170 30 L320 120"/>
+            <path d="M48 104 V200 H292 V104"/>
+            <path d="M292 150 L400 150 L400 200 L292 200"/>
+            <path d="M292 140 L408 140"/>
+            <path d="M318 150 V200 M374 150 V200"/>
+            <path d="M140 200 V150 H200 V200"/>
+            <path d="M80 140 H120 V172 H80 Z"/>
+            <path d="M226 140 H266 V172 H226 Z"/>
+          </g>
+          <path d="M170 30 L320 120" stroke="var(--verdigris)" stroke-width="5" fill="none"/>
+          <g stroke="currentColor" stroke-width="1.2" opacity=".45">
+            <path d="M54 102 L170 34"/><path d="M70 102 L178 38"/><path d="M90 102 L190 45"/><path d="M110 102 L202 52"/>
+          </g>
+        </svg>
+        <p class="spec">8/12 pitch · ice &amp; water shield at eaves · copper valley flashing</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="trades" aria-label="What we do">
+    <div class="wrap">
+      <div class="trade" id="roofing">
+        <h2>Roofing</h2>
+        <p>Full replacements and the repairs that save a roof from replacement.</p>
+        <ul>
+          <li>Asphalt shingle tear-offs and re-roofs</li>
+          <li>Standing seam metal</li>
+          <li>Slate repair and ridge work</li>
+          <li>Chimney and skylight flashing, ice dam fixes</li>
+        </ul>
+      </div>
+      <div class="trade" id="carpentry">
+        <h2>Carpentry</h2>
+        <p>Exterior and finish work, built to handle freeze and thaw.</p>
+        <ul>
+          <li>Decks, porches and stairs</li>
+          <li>Exterior trim, doors and rot repair</li>
+          <li>Screened porches and small additions</li>
+          <li>Built-in shelving and interior trim</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="process" id="how" aria-labelledby="how-h">
+    <div class="wrap">
+      <h2 id="how-h">How a job runs</h2>
+      <ol class="steps">
+        <li><b>Measure</b><span>We visit, measure and look at what's under the surface.</span></li>
+        <li><b>Estimate</b><span>A written price with the scope spelled out, usually within two weeks.</span></li>
+        <li><b>Build</b><span>One crew from start to finish, cleanup included.</span></li>
+        <li><b>Warranty</b><span>Our workmanship is covered for one year from the day we finish.</span></li>
+      </ol>
+      <p class="area">Serving Turners Falls · Montague · Greenfield · Gill · Deerfield · Northfield · Bernardston · Leverett · Sunderland</p>
+    </div>
+  </section>
+
+  <section class="contact" id="contact" aria-labelledby="contact-h">
+    <div class="wrap">
+      <aside>
+        <p class="eyebrow">Contact</p>
+        <h2 id="contact-h">Tell us what you need</h2>
+        <p>Planning new work? We'll call to set up a measure visit. A problem with something we built? Tell us what you're seeing and roughly when we finished, and we'll find your job.</p>
+        <p class="area">Office: (413) 555-0100 (placeholder)</p>
+      </aside>
+
+      <div>
+        <div class="thanks" id="thanks" hidden tabindex="-1">
+          <h3 id="thanks-h">Thanks, we have it</h3>
+          <p id="thanks-p">Someone from the office will be in touch within two business days.</p>
+          <p><a href="?#contact" id="again">Send another</a></p>
+        </div>
+
+        <form id="intake" method="POST" novalidate>
+          <fieldset class="choose">
+            <legend>What can we help with?</legend>
+            <div class="choice">
+              <input type="radio" name="intent" id="intent-lead" value="lead" checked>
+              <label for="intent-lead"><b>Start a new project</b><small>New roof, deck, porch or other work. Past clients welcome.</small></label>
+            </div>
+            <div class="choice">
+              <input type="radio" name="intent" id="intent-repair" value="repair">
+              <label for="intent-repair"><b>Report an issue</b><small>Something isn't right with work we've already finished.</small></label>
+            </div>
+          </fieldset>
+
+          <!-- Salesforce routing; set by script for the chosen branch -->
+          <input type="hidden" id="retURL" name="retURL" value="">
+
+          <!-- New project → Web-to-Lead -->
+          <fieldset class="branch" id="branch-lead">
+            <input type="hidden" name="oid" value="00DgK00000cFph3">
+            <input type="hidden" name="lead_source" value="Web">
+            <input type="hidden" name="company" id="lead-company" value="">
+            <input type="hidden" name="state_code" value="MA">
+            <input type="hidden" name="country_code" value="US">
+            <input type="hidden" name="00NgK00004yO7rx" id="lead-propaddr" value="">
+
+            <div class="field">
+              <span class="label" id="trade-l">Type of work</span>
+              <div class="pills" role="radiogroup" aria-labelledby="trade-l">
+                <div class="pill"><input type="radio" name="00NgK00004yO7ry" id="trade-roof" value="Roof" checked><label for="trade-roof">Roofing</label></div>
+                <div class="pill"><input type="radio" name="00NgK00004yO7ry" id="trade-carp" value="Carpentry"><label for="trade-carp">Carpentry</label></div>
+              </div>
+            </div>
+            <div class="grid2">
+              <div class="field"><label for="lead-first">First name</label><input type="text" id="lead-first" name="first_name" autocomplete="given-name" maxlength="40" required></div>
+              <div class="field"><label for="lead-last">Last name</label><input type="text" id="lead-last" name="last_name" autocomplete="family-name" maxlength="80" required></div>
+            </div>
+            <div class="grid2">
+              <div class="field"><label for="lead-email">Email</label><input type="email" id="lead-email" name="email" autocomplete="email" maxlength="80" required></div>
+              <div class="field"><label for="lead-phone">Phone</label><input type="tel" id="lead-phone" name="phone" autocomplete="tel" maxlength="40"></div>
+            </div>
+            <div class="grid2">
+              <div class="field"><label for="lead-street">Street address of the property</label><input type="text" id="lead-street" name="street" autocomplete="street-address" required></div>
+              <div class="field"><label for="lead-city">Town</label><input type="text" id="lead-city" name="city" autocomplete="address-level2" maxlength="40" required></div>
+            </div>
+            <div class="field">
+              <label for="lead-desc">What would you like done? <span class="hint">Size, materials, anything you've noticed.</span></label>
+              <textarea id="lead-desc" name="00NgK00004yO7rw" required></textarea>
+            </div>
+            <div class="field">
+              <label for="lead-timing">When are you hoping to start?</label>
+              <select id="lead-timing" name="00NgK00004yO7rv">
+                <option>As soon as possible</option>
+                <option>Within a month</option>
+                <option>Before winter</option>
+                <option>Spring</option>
+                <option>Flexible</option>
+              </select>
+            </div>
+            <label class="check"><input type="checkbox" id="lead-consent" name="00NgK00004yO7ru" value="1" required>
+              <span>You can contact me by phone or email about this request.</span></label>
+          </fieldset>
+
+          <!-- Issue with finished work → Web-to-Case -->
+          <fieldset class="branch" id="branch-repair" hidden disabled>
+            <input type="hidden" name="orgid" value="00DgK00000cFph3">
+            <input type="hidden" name="description" id="case-description" value="">
+            <input type="hidden" name="00NgK00004yO7rl" id="case-approx" value="">
+
+            <div class="grid2">
+              <div class="field"><label for="case-name">Your name</label><input type="text" id="case-name" name="name" autocomplete="name" maxlength="80" required></div>
+              <div class="field"><label for="case-email">Email <span class="hint">The one we have on file helps us find your job.</span></label><input type="email" id="case-email" name="email" autocomplete="email" maxlength="80" required></div>
+            </div>
+            <div class="grid2">
+              <div class="field"><label for="case-phone">Phone</label><input type="tel" id="case-phone" name="phone" autocomplete="tel" maxlength="40"></div>
+              <div class="field"><label for="case-addr">Address where we did the work</label><input type="text" id="case-addr" autocomplete="street-address" required></div>
+            </div>
+            <div class="field">
+              <span class="label" id="ctrade-l">What did we work on?</span>
+              <div class="pills" role="radiogroup" aria-labelledby="ctrade-l">
+                <div class="pill"><input type="radio" name="case_trade" id="ctrade-roof" value="Roof" checked><label for="ctrade-roof">Roof</label></div>
+                <div class="pill"><input type="radio" name="case_trade" id="ctrade-carp" value="Carpentry"><label for="ctrade-carp">Carpentry</label></div>
+              </div>
+            </div>
+            <div class="grid2">
+              <div class="field"><label for="case-subject">What's the problem, in a few words?</label><input type="text" id="case-subject" name="subject" maxlength="255" placeholder="e.g. Leak by the chimney" required></div>
+              <div class="field"><label for="case-when">About when did we finish? <span class="hint">Month and year is fine.</span></label><input type="month" id="case-when" required></div>
+            </div>
+            <div class="field">
+              <label for="case-details">Details <span class="hint">Where it is, when it started, what happens in rain or cold.</span></label>
+              <textarea id="case-details" required></textarea>
+            </div>
+          </fieldset>
+
+          <div class="hp" aria-hidden="true"><label for="website">Leave this empty</label><input type="text" id="website" tabindex="-1" autocomplete="off"></div>
+
+          <div class="formfoot">
+            <button class="btn" type="submit" id="submit">Send request</button>
+            <p id="foot-note">We'll call to set up a measure visit.</p>
+          </div>
+          <p class="err" id="err" role="alert" hidden></p>
+        </form>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>Apollo Construction · Turners Falls, MA · mock-up</span>
+    <span>Workmanship warranty: one year from completion</span>
+  </div>
+</footer>
+
+<script>
+(function () {
+  var W2L = "https://webto.salesforce.com/servlet/servlet.WebToLead?encoding=UTF-8&orgId=00DgK00000cFph3";
+  var W2C = "https://webto.salesforce.com/servlet/servlet.WebToCase?encoding=UTF-8&orgId=00DgK00000cFph3";
+  var form = document.getElementById("intake");
+  var lead = document.getElementById("branch-lead");
+  var repair = document.getElementById("branch-repair");
+  var err = document.getElementById("err");
+  var params = new URLSearchParams(location.search);
+  var here = location.origin + location.pathname;
+
+  function setBranch(kind) {
+    var isRepair = kind === "repair";
+    lead.hidden = isRepair; lead.disabled = isRepair;
+    repair.hidden = !isRepair; repair.disabled = !isRepair;
+    document.getElementById(isRepair ? "intent-repair" : "intent-lead").checked = true;
+    document.getElementById("submit").textContent = isRepair ? "Send issue report" : "Send request";
+    document.getElementById("foot-note").textContent = isRepair
+      ? "We'll match this to your job and call to arrange a look."
+      : "We'll call to set up a measure visit.";
+    err.hidden = true;
+  }
+  document.querySelectorAll('input[name="intent"]').forEach(function (r) {
+    r.addEventListener("change", function () { setBranch(r.value); });
+  });
+
+  // Return from Salesforce: ?sent=lead or ?sent=repair
+  var sent = params.get("sent");
+  if (sent === "lead" || sent === "repair") {
+    form.hidden = true;
+    var t = document.getElementById("thanks");
+    t.hidden = false;
+    if (sent === "repair") {
+      document.getElementById("thanks-h").textContent = "Thanks, we've logged the issue";
+      document.getElementById("thanks-p").textContent = "The office will match it to your job and call you to arrange a look. If water is coming in, call the office too.";
+    }
+    setTimeout(function () { t.focus(); }, 50);
+  } else {
+    setBranch(params.get("type") === "repair" ? "repair" : "lead");
+  }
+
+  function val(id) { return document.getElementById(id).value.trim(); }
+
+  form.addEventListener("submit", function (e) {
+    err.hidden = true;
+    if (val("website")) { e.preventDefault(); return; }       // bot filled the hidden field
+    var isRepair = document.getElementById("intent-repair").checked;
+    var active = isRepair ? repair : lead;
+    var bad = Array.prototype.find.call(active.querySelectorAll("[required]"), function (el) {
+      return el.type === "checkbox" ? !el.checked : !el.value.trim();
+    });
+    if (!bad) {
+      var em = active.querySelector('input[type=email]');
+      if (em && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em.value.trim())) bad = em;
+    }
+    if (bad) {
+      e.preventDefault();
+      var lab = form.querySelector('label[for="' + bad.id + '"]');
+      var name = lab ? lab.childNodes[0].textContent.trim() : "a required field";
+      err.textContent = bad.type === "checkbox" ? "Please tick the box so we can contact you."
+        : bad.type === "email" && bad.value ? "Check the email address; it doesn't look complete."
+        : "Please fill in: " + name + ".";
+      err.hidden = false; bad.focus(); return;
+    }
+    if (isRepair) {
+      var m = val("case-when").split("-");                     // yyyy-mm → mm/01/yyyy
+      document.getElementById("case-approx").value = m.length === 2 ? m[1] + "/01/" + m[0] : "";
+      var trade = document.querySelector('input[name="case_trade"]:checked').value;
+      document.getElementById("case-description").value =
+        "Work type: " + trade + "\nAddress: " + val("case-addr") + "\nFinished about: " + val("case-when") + "\n\n" + val("case-details");
+      form.action = W2C;
+      document.getElementById("retURL").value = here + "?sent=repair#contact";
+    } else {
+      document.getElementById("lead-company").value = val("lead-last") + " household";
+      document.getElementById("lead-propaddr").value = val("lead-street") + ", " + val("lead-city") + ", MA";
+      form.action = W2L;
+      document.getElementById("retURL").value = here + "?sent=lead#contact";
+    }
+    document.getElementById("submit").disabled = true;
+    document.getElementById("submit").textContent = "Sending…";
+  });
+})();
+</script>
+</body>
+</html>
