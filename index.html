@@ -280,8 +280,7 @@ footer .wrap { padding-block: 24px 36px; display: flex; gap: 16px; justify-conte
           <p><a href="?#contact" id="again">Send another</a></p>
         </div>
 
-        <form id="intake" method="POST" novalidate>
-          <fieldset class="choose">
+        <fieldset class="choose" id="chooser">
             <legend>What can we help with?</legend>
             <div class="choice">
               <input type="radio" name="intent" id="intent-lead" value="lead" checked>
@@ -293,9 +292,8 @@ footer .wrap { padding-block: 24px 36px; display: flex; gap: 16px; justify-conte
             </div>
           </fieldset>
 
-          <!-- Salesforce routing; set by script for the chosen branch -->
-          <input type="hidden" id="retURL" name="retURL" value="">
-
+        <form id="form-lead" method="POST" novalidate>
+          <input type="hidden" id="retURL-lead" name="retURL" value="">
           <!-- New project → Web-to-Lead -->
           <fieldset class="branch" id="branch-lead">
             <input type="hidden" name="oid" value="00DgK00000cFph3">
@@ -342,8 +340,18 @@ footer .wrap { padding-block: 24px 36px; display: flex; gap: 16px; justify-conte
               <span>You can contact me by phone or email about this request.</span></label>
           </fieldset>
 
+          <div class="hp" aria-hidden="true"><label for="website">Leave this empty</label><input type="text" id="website" tabindex="-1" autocomplete="off"></div>
+
+          <div class="formfoot">
+            <button class="btn" type="submit" id="submit-lead">Send request</button>
+            <p>We'll call to set up a measure visit.</p>
+          </div>
+        </form>
+
+        <form id="form-repair" method="POST" novalidate hidden>
+          <input type="hidden" id="retURL-repair" name="retURL" value="">
           <!-- Issue with finished work → Web-to-Case -->
-          <fieldset class="branch" id="branch-repair" hidden disabled>
+          <fieldset class="branch" id="branch-repair">
             <input type="hidden" name="orgid" value="00DgK00000cFph3">
             <input type="hidden" name="description" id="case-description" value="">
             <input type="hidden" name="00NgK00004yO7rl" id="case-approx" value="">
@@ -365,7 +373,7 @@ footer .wrap { padding-block: 24px 36px; display: flex; gap: 16px; justify-conte
             </div>
             <div class="grid2">
               <div class="field"><label for="case-subject">What's the problem, in a few words?</label><input type="text" id="case-subject" name="subject" maxlength="255" placeholder="e.g. Leak by the chimney" required></div>
-              <div class="field"><label for="case-when">About when did we finish? <span class="hint">Month and year is fine.</span></label><input type="month" id="case-when" required></div>
+              <div class="field"><label for="case-when">About when did we finish? <span class="hint">Optional. Month and year is fine.</span></label><input type="month" id="case-when"></div>
             </div>
             <div class="field">
               <label for="case-details">Details <span class="hint">Where it is, when it started, what happens in rain or cold.</span></label>
@@ -373,14 +381,15 @@ footer .wrap { padding-block: 24px 36px; display: flex; gap: 16px; justify-conte
             </div>
           </fieldset>
 
-          <div class="hp" aria-hidden="true"><label for="website">Leave this empty</label><input type="text" id="website" tabindex="-1" autocomplete="off"></div>
+          <div class="hp" aria-hidden="true"><label for="website-r">Leave this empty</label><input type="text" id="website-r" tabindex="-1" autocomplete="off"></div>
 
           <div class="formfoot">
-            <button class="btn" type="submit" id="submit">Send request</button>
-            <p id="foot-note">We'll call to set up a measure visit.</p>
+            <button class="btn" type="submit" id="submit-repair">Send issue report</button>
+            <p>We'll match this to your job and call to arrange a look.</p>
           </div>
-          <p class="err" id="err" role="alert" hidden></p>
         </form>
+
+        <p class="err" id="err" role="alert" hidden></p>
       </div>
     </div>
   </section>
@@ -397,22 +406,19 @@ footer .wrap { padding-block: 24px 36px; display: flex; gap: 16px; justify-conte
 (function () {
   var W2L = "https://webto.salesforce.com/servlet/servlet.WebToLead?encoding=UTF-8&orgId=00DgK00000cFph3";
   var W2C = "https://webto.salesforce.com/servlet/servlet.WebToCase?encoding=UTF-8&orgId=00DgK00000cFph3";
-  var form = document.getElementById("intake");
-  var lead = document.getElementById("branch-lead");
-  var repair = document.getElementById("branch-repair");
+  var lead = document.getElementById("form-lead");
+  var repair = document.getElementById("form-repair");
+  var chooser = document.getElementById("chooser");
   var err = document.getElementById("err");
   var params = new URLSearchParams(location.search);
   var here = location.origin + location.pathname;
 
+  // Show one form at a time; the chooser sets which one.
   function setBranch(kind) {
     var isRepair = kind === "repair";
-    lead.hidden = isRepair; lead.disabled = isRepair;
-    repair.hidden = !isRepair; repair.disabled = !isRepair;
+    lead.hidden = isRepair;
+    repair.hidden = !isRepair;
     document.getElementById(isRepair ? "intent-repair" : "intent-lead").checked = true;
-    document.getElementById("submit").textContent = isRepair ? "Send issue report" : "Send request";
-    document.getElementById("foot-note").textContent = isRepair
-      ? "We'll match this to your job and call to arrange a look."
-      : "We'll call to set up a measure visit.";
     err.hidden = true;
   }
   document.querySelectorAll('input[name="intent"]').forEach(function (r) {
@@ -422,7 +428,7 @@ footer .wrap { padding-block: 24px 36px; display: flex; gap: 16px; justify-conte
   // Return from Salesforce: ?sent=lead or ?sent=repair
   var sent = params.get("sent");
   if (sent === "lead" || sent === "repair") {
-    form.hidden = true;
+    lead.hidden = true; repair.hidden = true; chooser.hidden = true; err.hidden = true;
     var t = document.getElementById("thanks");
     t.hidden = false;
     if (sent === "repair") {
@@ -436,43 +442,49 @@ footer .wrap { padding-block: 24px 36px; display: flex; gap: 16px; justify-conte
 
   function val(id) { return document.getElementById(id).value.trim(); }
 
-  form.addEventListener("submit", function (e) {
-    err.hidden = true;
-    if (val("website")) { e.preventDefault(); return; }       // bot filled the hidden field
-    var isRepair = document.getElementById("intent-repair").checked;
-    var active = isRepair ? repair : lead;
-    var bad = Array.prototype.find.call(active.querySelectorAll("[required]"), function (el) {
+  // Stops the submit and shows the first problem if the form is incomplete.
+  function check(f, e) {
+    var bad = Array.prototype.find.call(f.querySelectorAll("[required]"), function (el) {
       return el.type === "checkbox" ? !el.checked : !el.value.trim();
     });
     if (!bad) {
-      var em = active.querySelector('input[type=email]');
+      var em = f.querySelector('input[type=email]');
       if (em && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em.value.trim())) bad = em;
     }
-    if (bad) {
-      e.preventDefault();
-      var lab = form.querySelector('label[for="' + bad.id + '"]');
-      var name = lab ? lab.childNodes[0].textContent.trim() : "a required field";
-      err.textContent = bad.type === "checkbox" ? "Please tick the box so we can contact you."
-        : bad.type === "email" && bad.value ? "Check the email address; it doesn't look complete."
-        : "Please fill in: " + name + ".";
-      err.hidden = false; bad.focus(); return;
-    }
-    if (isRepair) {
-      var m = val("case-when").split("-");                     // yyyy-mm → mm/01/yyyy
-      document.getElementById("case-approx").value = m.length === 2 ? m[1] + "/01/" + m[0] : "";
-      var trade = document.querySelector('input[name="case_trade"]:checked').value;
-      document.getElementById("case-description").value =
-        "Work type: " + trade + "\nAddress: " + val("case-addr") + "\nFinished about: " + val("case-when") + "\n\n" + val("case-details");
-      form.action = W2C;
-      document.getElementById("retURL").value = here + "?sent=repair#contact";
-    } else {
-      document.getElementById("lead-company").value = val("lead-last") + " household";
-      document.getElementById("lead-propaddr").value = val("lead-street") + ", " + val("lead-city") + ", MA";
-      form.action = W2L;
-      document.getElementById("retURL").value = here + "?sent=lead#contact";
-    }
-    document.getElementById("submit").disabled = true;
-    document.getElementById("submit").textContent = "Sending…";
+    if (!bad) return true;
+    e.preventDefault();
+    var lab = f.querySelector('label[for="' + bad.id + '"]');
+    var label = lab ? lab.childNodes[0].textContent.trim() : "a required field";
+    err.textContent = bad.type === "checkbox" ? "Please tick the box so we can contact you."
+      : bad.type === "email" && bad.value ? "Check the email address; it doesn't look complete."
+      : "Please fill in: " + label + ".";
+    err.hidden = false; bad.focus();
+    return false;
+  }
+
+  lead.addEventListener("submit", function (e) {
+    err.hidden = true;
+    if (val("website")) { e.preventDefault(); return; }       // bot filled the hidden field
+    if (!check(lead, e)) return;
+    document.getElementById("lead-company").value = val("lead-last") + " household";
+    document.getElementById("lead-propaddr").value = val("lead-street") + ", " + val("lead-city") + ", MA";
+    document.getElementById("retURL-lead").value = here + "?sent=lead#contact";
+    lead.action = W2L;
+    var b = document.getElementById("submit-lead"); b.disabled = true; b.textContent = "Sending…";
+  });
+
+  repair.addEventListener("submit", function (e) {
+    err.hidden = true;
+    if (val("website-r")) { e.preventDefault(); return; }
+    if (!check(repair, e)) return;
+    var m = val("case-when").split("-");                     // yyyy-mm → mm/01/yyyy, if given
+    document.getElementById("case-approx").value = m.length === 2 ? m[1] + "/01/" + m[0] : "";
+    var trade = document.querySelector('input[name="case_trade"]:checked').value;
+    document.getElementById("case-description").value =
+      "Work type: " + trade + "\nAddress: " + val("case-addr") + "\nFinished about: " + (val("case-when") || "not given") + "\n\n" + val("case-details");
+    document.getElementById("retURL-repair").value = here + "?sent=repair#contact";
+    repair.action = W2C;
+    var b = document.getElementById("submit-repair"); b.disabled = true; b.textContent = "Sending…";
   });
 })();
 </script>
