@@ -106,6 +106,14 @@ h2 { font: 800 clamp(1.8rem, 3.6vw, 2.4rem)/1 var(--display); text-transform: up
 .area { font: 400 0.85rem/1.6 var(--mono); color: var(--ink-soft); }
 
 /* ---- the form ---- */
+[hidden] { display: none !important; }
+.choose-h { font: 800 1.4rem/1.05 var(--display); text-transform: uppercase; margin: 0 0 14px; }
+.choose a.card { display: grid; gap: 4px; padding: 16px; border: 2px solid var(--rule); border-radius: 6px; color: var(--ink); text-decoration: none; }
+.choose a.card b { font: 800 1.25rem/1.05 var(--display); text-transform: uppercase; }
+.choose a.card small { color: var(--ink-soft); font-size: 0.88rem; line-height: 1.4; }
+.choose a.card:hover, .choose a.card:focus-visible { border-color: var(--verdigris); box-shadow: inset 0 0 0 1px var(--verdigris); outline: none; }
+.back { margin: 0; font-size: 0.92rem; }
+.form-h { font: 800 1.5rem/1.05 var(--display); text-transform: uppercase; margin: 0; }
 .contact { background: var(--panel); border-top: 1px solid var(--rule); }
 .contact .wrap { display: grid; grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.4fr); gap: 48px; padding-block: 48px 64px; }
 .contact aside p { color: var(--ink-soft); margin: 12px 0 0; max-width: 30em; }
@@ -280,20 +288,19 @@ footer .wrap { padding-block: 24px 36px; display: flex; gap: 16px; justify-conte
           <p><a href="?#contact" id="again">Send another</a></p>
         </div>
 
-        <fieldset class="choose" id="chooser">
-            <legend>What can we help with?</legend>
-            <div class="choice">
-              <input type="radio" name="intent" id="intent-lead" value="lead" checked>
-              <label for="intent-lead"><b>Start a new project</b><small>New roof, deck, porch or other work. Past clients welcome.</small></label>
-            </div>
-            <div class="choice">
-              <input type="radio" name="intent" id="intent-repair" value="repair">
-              <label for="intent-repair"><b>Report an issue</b><small>Something isn't right with work we've already finished.</small></label>
-            </div>
-          </fieldset>
+        <div class="choose-wrap" id="chooser">
+          <h3 class="choose-h">What can we help with?</h3>
+          <div class="choose">
+            <a class="card" href="?type=lead#contact"><b>Start a new project</b><small>New roof, deck, porch or other work. Past clients welcome.</small></a>
+            <a class="card" href="?type=repair#contact"><b>Report an issue</b><small>Something isn't right with work we've already finished.</small></a>
+          </div>
+        </div>
+
+        <p class="back" id="back" hidden><a href="?#contact">&larr; Back to options</a></p>
 
         <form id="form-lead" method="POST" novalidate>
           <input type="hidden" id="retURL-lead" name="retURL" value="">
+          <h3 class="form-h">Start a new project</h3>
           <!-- New project → Web-to-Lead -->
           <fieldset class="branch" id="branch-lead">
             <input type="hidden" name="oid" value="00DgK00000cFph3">
@@ -350,6 +357,7 @@ footer .wrap { padding-block: 24px 36px; display: flex; gap: 16px; justify-conte
 
         <form id="form-repair" method="POST" novalidate hidden>
           <input type="hidden" id="retURL-repair" name="retURL" value="">
+          <h3 class="form-h">Report an issue</h3>
           <!-- Issue with finished work → Web-to-Case -->
           <fieldset class="branch" id="branch-repair">
             <input type="hidden" name="orgid" value="00DgK00000cFph3">
@@ -406,29 +414,26 @@ footer .wrap { padding-block: 24px 36px; display: flex; gap: 16px; justify-conte
 (function () {
   var W2L = "https://webto.salesforce.com/servlet/servlet.WebToLead?encoding=UTF-8&orgId=00DgK00000cFph3";
   var W2C = "https://webto.salesforce.com/servlet/servlet.WebToCase?encoding=UTF-8&orgId=00DgK00000cFph3";
+  var chooser = document.getElementById("chooser");
+  var back = document.getElementById("back");
   var lead = document.getElementById("form-lead");
   var repair = document.getElementById("form-repair");
-  var chooser = document.getElementById("chooser");
   var err = document.getElementById("err");
   var params = new URLSearchParams(location.search);
   var here = location.origin + location.pathname;
 
-  // Show one form at a time; the chooser sets which one.
-  function setBranch(kind) {
-    var isRepair = kind === "repair";
-    lead.hidden = isRepair;
-    repair.hidden = !isRepair;
-    document.getElementById(isRepair ? "intent-repair" : "intent-lead").checked = true;
+  // One view at a time: the two options, or only the chosen form, or the thank-you note.
+  function showView(view) {
+    chooser.hidden = view !== "choose";
+    lead.hidden = view !== "lead";
+    repair.hidden = view !== "repair";
+    back.hidden = view !== "lead" && view !== "repair";
     err.hidden = true;
   }
-  document.querySelectorAll('input[name="intent"]').forEach(function (r) {
-    r.addEventListener("change", function () { setBranch(r.value); });
-  });
 
-  // Return from Salesforce: ?sent=lead or ?sent=repair
   var sent = params.get("sent");
   if (sent === "lead" || sent === "repair") {
-    lead.hidden = true; repair.hidden = true; chooser.hidden = true; err.hidden = true;
+    showView("thanks");
     var t = document.getElementById("thanks");
     t.hidden = false;
     if (sent === "repair") {
@@ -437,7 +442,8 @@ footer .wrap { padding-block: 24px 36px; display: flex; gap: 16px; justify-conte
     }
     setTimeout(function () { t.focus(); }, 50);
   } else {
-    setBranch(params.get("type") === "repair" ? "repair" : "lead");
+    var type = params.get("type");
+    showView(type === "lead" || type === "repair" ? type : "choose");
   }
 
   function val(id) { return document.getElementById(id).value.trim(); }
